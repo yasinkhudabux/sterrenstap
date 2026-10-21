@@ -76,3 +76,13 @@ button:disabled{opacity:1}
 
 /* Cloud account */
 #cloudAuth{font-size:12px;white-space:nowrap}#cloudAuth button{border:1px solid var(--border);border-radius:12px;background:white;color:var(--primary);padding:9px;font-weight:700}.account-dialog{border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:25px;width:min(420px,calc(100vw - 28px));color:var(--ink)}.account-dialog::backdrop{background:#24203799}.account-dialog form{display:grid;gap:15px}.account-dialog label{display:grid;gap:7px;font-weight:700}.account-dialog label:has([type=checkbox]){display:flex;align-items:center;font-size:14px}.account-dialog p{color:var(--muted)}@media(max-width:700px){#cloudAuth{font-size:11px}#cloudAuth button{padding:6px}}
+
+/* iPad: keep the next-question action within thumb reach without scrolling. */
+@media (hover:none) and (pointer:coarse) and (min-width:600px) and (max-width:1200px){
+ .quiz-wrap:has(.quiz-continue){padding-bottom:92px}
+ .quiz-wrap:has(.quiz-continue) .quiz-continue{position:fixed;z-index:30;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);margin:0}
+ .quiz-wrap .quiz-continue .btn{min-height:58px;box-shadow:0 8px 25px #4830a64d}
+}
+@media (hover:none) and (pointer:coarse) and (min-width:600px) and (max-width:840px){
+ .quiz-wrap:has(.quiz-continue) .quiz-continue{bottom:calc(92px + env(safe-area-inset-bottom))}
+}
