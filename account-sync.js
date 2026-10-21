@@ -3,7 +3,7 @@
 'use strict';
 const cfg=window.STERRENSTAP_SUPABASE;
 const sessionKey='sterrenstap_parent_session';
-let session=null,adapter=null,busy=false,timer;
+let session=null,adapter=null,busy=false,timer,dirty=false;
 try{session=JSON.parse(localStorage.getItem(sessionKey)||'null')}catch(_){}
 function setSession(value){session=value;if(value)localStorage.setItem(sessionKey,JSON.stringify(value));else localStorage.removeItem(sessionKey);render();}
 function status(value){const el=document.getElementById('cloudStatus');if(el)el.textContent=value;}
@@ -32,7 +32,7 @@ async function signIn(email,password,register=false){
  setSession(s);await load();status('☁️ Account verbonden');
 }
 async function load(){
- if(!adapter||!session||busy)return;
+ if(!adapter||!session||busy||dirty)return;
  busy=true;
  try{
   const data=await request('/rest/v1/account_state?select=state&user_id=eq.'+encodeURIComponent(session.user.id),'GET',undefined,true);
@@ -47,7 +47,7 @@ async function save(){
   await request('/rest/v1/account_state?on_conflict=user_id','POST',{
    user_id:session.user.id,state:adapter.read(),updated_at:new Date().toISOString()
   },true);
-  status('☁️ Opgeslagen');
+  dirty=false;status('☁️ Opgeslagen');
  }catch(e){status('⚠️ Offline: lokaal bewaard');}
 }
 function render(){
@@ -58,7 +58,7 @@ function render(){
 }
 window.STERRENSTAP_CLOUD={
  connect(a){adapter=a;render();if(session)load();},
- changed(){if(!session)return;clearTimeout(timer);timer=setTimeout(save,700);},
+ changed(){if(!session)return;dirty=true;clearTimeout(timer);timer=setTimeout(save,700);},
  reload:load,
  signedIn(){return !!session;}
 };
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   e.preventDefault();
   const button=form.querySelector('button[type=submit]');button.disabled=true;
   try{
-   await signIn(form.elements.email.value,form.elements.password.value,form.elements.register.checked);
+   await signIn(form.querySelector('[name=email]').value,form.querySelector('[name=password]').value,form.querySelector('[name=register]').checked);
    if(session)dialog.close();
   }catch(err){status(err.message);}finally{button.disabled=false;}
  });
