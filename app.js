@@ -144,7 +144,7 @@
   function toddlerAnswer(o){
     if(Object.hasOwn(toddlerColors,o))return `<span class="toddler-color" style="background:${toddlerColors[o]}" aria-hidden="true"></span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
     if(Object.hasOwn(toddlerIcons,o))return `<span class="toddler-icon" aria-hidden="true">${toddlerIcons[o]}</span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
-    if(/^\\d+$/.test(o)||/^[⭐🔴🔺🟦]$/.test(o))return `<span class="toddler-icon" aria-hidden="true">${escapeHtml(o)}</span>`;
+    if(/^[0-9]+$/.test(o)||/^[⭐🔴🔺🟦]$/.test(o))return `<span class="toddler-icon" aria-hidden="true">${escapeHtml(o)}</span>`;
     return `<span class="toddler-answer-label">${escapeHtml(o)}</span>`;
   }
   function readCurrentQuestion(){const l=byId(session?.lessonId),q=l?.questions[session?.index];if(q)speak(`${q.passage||''} ${q.question}. ${q.options.join(', ')}`);}
