@@ -54,7 +54,7 @@ function render(){
  const el=document.getElementById('cloudAuth');if(!el)return;
  el.innerHTML=session?'<span>☁️ Ingelogd</span> <button type="button" id="cloudLogout">Uitloggen</button>':'<button type="button" id="cloudLogin">☁️ Ouderaccount</button>';
  document.getElementById('cloudLogin')?.addEventListener('click',()=>document.getElementById('accountDialog')?.showModal());
- document.getElementById('cloudLogout')?.addEventListener('click',async()=>{try{await request('/auth/v1/logout','POST',{},true);}catch(_){}setSession(null);location.reload();});
+ document.getElementById('cloudLogout')?.addEventListener('click',async()=>{try{await request('/auth/v1/logout','POST',{},true);}catch(_){}setSession(null);localStorage.removeItem('sterrenstap_v2_local');location.reload();});
 }
 window.STERRENSTAP_CLOUD={
  connect(a){adapter=a;render();if(session)load();},
