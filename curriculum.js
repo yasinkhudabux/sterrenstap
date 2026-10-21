@@ -289,5 +289,79 @@
     q('Welke bron controleer je voor nieuws?',['Alleen een gerucht','Een betrouwbare nieuwsbron','Een onbekende advertentie','Een willekeurige reactie'],'Een betrouwbare nieuwsbron','Vergelijk informatie met betrouwbare bronnen.','📰'),
     q('Wat doe je bij een nare online boodschap?',['Terug schelden','Bewaren en een vertrouwde volwassene vertellen','Blijven praten','Je wachtwoord delen'],'Bewaren en een vertrouwde volwassene vertellen','Vraag hulp en reageer niet op pesten.','💜')]);
 
+
+  // Extra oefenlessen: één nieuwe les per leeftijdsgroep.
+  L("p-lichaam","p","Mijn lichaam","🖐️","Ontdekken","Leer lichaamsdelen herkennen",[
+    q("Waarmee ruik je?",["Je neus","Je knie","Je elleboog","Je voet"],"Je neus","Met je neus kun je ruiken.","👃"),
+    q("Waarmee luister je?",["Je oren","Je tenen","Je haren","Je vingers"],"Je oren","Met je oren hoor je geluiden.","👂"),
+    q("Waarmee kijk je?",["Je ogen","Je mond","Je handen","Je knieën"],"Je ogen","Met je ogen kun je zien.","👀"),
+    q("Waarmee loop je?",["Je voeten","Je oren","Je neus","Je haar"],"Je voeten","Met je voeten kun je lopen.","👣"),
+    q("Waarmee pak je een bal?",["Je handen","Je oren","Je neus","Je knieën"],"Je handen","Met je handen kun je iets vasthouden.","👐")
+  ]);
+
+  L("g1-tegenstellingen","g1","Tegenstellingen","↔️","Taal","Ontdek woorden die het tegenovergestelde betekenen",[
+    q("Wat is het tegenovergestelde van groot?",["Klein","Breed","Lang","Zwaar"],"Klein","Groot en klein zijn tegenstellingen.","🐘 🐭"),
+    q("Wat is het tegenovergestelde van warm?",["Koud","Heet","Lauw","Zonnig"],"Koud","Warm en koud zijn tegenstellingen.","☀️ ❄️"),
+    q("Wat is het tegenovergestelde van blij?",["Verdrietig","Vrolijk","Lachend","Tevreden"],"Verdrietig","Blij en verdrietig zijn tegenstellingen.","😊 😢"),
+    q("Wat is het tegenovergestelde van boven?",["Onder","Hoog","Naast","Ver"],"Onder","Boven en onder zijn tegenstellingen.","⬆️ ⬇️"),
+    q("Wat is het tegenovergestelde van open?",["Dicht","Groot","Licht","Nieuw"],"Dicht","Open en dicht zijn tegenstellingen.","🚪")
+  ]);
+
+  L("g2-rijmwoorden","g2","Rijmwoorden zoeken","🎵","Taal","Welke woorden klinken hetzelfde aan het eind?",[
+    q("Welk woord rijmt op kat?",["Mat","Kip","Vis","Huis"],"Mat","Kat en mat rijmen.","🐱"),
+    q("Welk woord rijmt op boom?",["Droom","Bal","Tak","Zon"],"Droom","Boom en droom rijmen.","🌳"),
+    q("Welk woord rijmt op muis?",["Huis","Maan","Boom","Vis"],"Huis","Muis en huis rijmen.","🐭"),
+    q("Welk woord rijmt op zon?",["Ton","Zee","Bal","Raam"],"Ton","Zon en ton rijmen.","☀️"),
+    q("Welk woord rijmt op beer?",["Peer","Kat","Hond","Kip"],"Peer","Beer en peer rijmen.","🐻 🍐")
+  ]);
+
+  L("g3-tientallen","g3","Tientallen en eenheden","🔢","Rekenen","Ontdek hoe getallen zijn opgebouwd",[
+    q("Hoeveel is 2 tientallen en 3 eenheden?",["23","32","203","5"],"23","Twee tientallen zijn 20, plus 3 is 23.","🔢"),
+    q("Hoeveel tientallen zitten er in 40?",["4","40","2","0"],"4","Vier keer tien is 40.","🔟"),
+    q("Wat is 30 + 6?",["36","63","306","24"],"36","Dertig plus zes is zesendertig.","🧮"),
+    q("Welk getal heeft 5 tientallen en 1 eenheid?",["51","15","501","6"],"51","Vijf tientallen zijn 50, plus 1 is 51.","🔢"),
+    q("Hoeveel eenheden zitten er in 78 naast de 7 tientallen?",["8","7","78","70"],"8","78 bestaat uit 7 tientallen en 8 eenheden.","🧮")
+  ]);
+
+  L("g4-keer-en-delen","g4","Keer en deel","✖️","Rekenen","Oefen vermenigvuldigen en delen",[
+    q("Hoeveel is 6 × 4?",["24","20","28","10"],"24","Zes groepjes van vier zijn 24.","✖️"),
+    q("Hoeveel is 35 ÷ 5?",["7","6","8","5"],"7","Vijf keer zeven is 35.","➗"),
+    q("Hoeveel is 8 × 3?",["24","21","32","11"],"24","Acht keer drie is 24.","✖️"),
+    q("Hoeveel is 42 ÷ 6?",["7","8","6","9"],"7","Zes keer zeven is 42.","➗"),
+    q("Hoeveel is 9 × 5?",["45","40","50","35"],"45","Negen keer vijf is 45.","✖️")
+  ]);
+
+  L("g5-kommageld","g5","Rekenen met euro's","💶","Rekenen","Tel bedragen met komma's bij elkaar op",[
+    q("Hoeveel is € 2,50 + € 1,20?",["€ 3,70","€ 3,50","€ 4,20","€ 2,70"],"€ 3,70","2 euro 50 plus 1 euro 20 is 3 euro 70.","💶"),
+    q("Je betaalt € 5 voor iets van € 3,75. Wat krijg je terug?",["€ 1,25","€ 2,25","€ 1,75","€ 0,75"],"€ 1,25","5 euro min 3 euro 75 is 1 euro 25.","🪙"),
+    q("Hoeveel is € 4,50 + € 0,50?",["€ 5,00","€ 4,55","€ 4,00","€ 5,50"],"€ 5,00","Vijftig cent erbij maakt precies 5 euro.","💰"),
+    q("Hoeveel is € 10,00 - € 2,40?",["€ 7,60","€ 8,60","€ 7,40","€ 6,60"],"€ 7,60","Tien euro min twee euro veertig is zeven euro zestig.","🛒"),
+    q("Wat is duurder?",["€ 3,90","€ 3,09","€ 3,19","€ 3,49"],"€ 3,90","Negentig cent is meer dan negen, negentien of negenenveertig cent.","🏷️")
+  ]);
+
+  L("g6-verhoudingen","g6","Verhoudingen oefenen","⚖️","Rekenen","Ontdek verhoudingen met herkenbare voorbeelden",[
+    q("Voor 2 glazen sap heb je 4 sinaasappels nodig. Hoeveel voor 4 glazen?",["8","6","4","10"],"8","Twee keer zoveel glazen betekent twee keer zoveel sinaasappels.","🍊"),
+    q("Een recept voor 3 personen gebruikt 6 eieren. Hoeveel voor 6 personen?",["12","9","18","6"],"12","Zes personen is het dubbele van drie.","🥚"),
+    q("Een fiets rijdt 10 km in 30 minuten. Hoe ver in 60 minuten bij dezelfde snelheid?",["20 km","15 km","30 km","10 km"],"20 km","Een uur is twee keer dertig minuten.","🚲"),
+    q("In een klas zijn 2 meisjes per 3 jongens. Hoeveel meisjes bij 6 jongens in dezelfde verhouding?",["4","3","6","9"],"4","De verhouding 2 op 3 wordt 4 op 6.","👧"),
+    q("Je mengt 1 deel siroop met 4 delen water. Hoeveel delen water bij 2 delen siroop?",["8","6","4","2"],"8","Je verdubbelt beide delen van de verhouding.","🥤")
+  ]);
+
+  L("g7-gemiddelde","g7","Gemiddelden berekenen","📊","Rekenen","Leer gemiddelden uitrekenen",[
+    q("Wat is het gemiddelde van 4, 6 en 8?",["6","5","7","18"],"6","4 + 6 + 8 = 18. Deel door 3: 6.","📊"),
+    q("Wat is het gemiddelde van 10 en 20?",["15","10","20","30"],"15","30 gedeeld door 2 is 15.","🧮"),
+    q("Wat is het gemiddelde van 3, 3, 6 en 8?",["5","4","6","20"],"5","Samen 20, gedeeld door 4 is 5.","📈"),
+    q("Wat is het gemiddelde van 7, 9 en 11?",["9","8","10","27"],"9","27 gedeeld door 3 is 9.","📊"),
+    q("Wat is het gemiddelde van 12, 14, 16 en 18?",["15","14","16","60"],"15","60 gedeeld door 4 is 15.","🧮")
+  ]);
+
+  L("g8-schaal","g8","Schaal en afstand","🗺️","Rekenen","Reken met schaal op kaarten en tekeningen",[
+    q("Op een kaart is 1 cm gelijk aan 1 km. Wat is 3 cm?",["3 km","30 km","300 m","1 km"],"3 km","Drie keer 1 kilometer is 3 kilometer.","🗺️"),
+    q("Een plattegrond heeft schaal 1:100. Hoeveel is 2 cm in werkelijkheid?",["2 meter","20 meter","20 cm","200 meter"],"2 meter","2 × 100 cm = 200 cm, dus 2 meter.","📐"),
+    q("Bij schaal 1:50 is 4 cm op papier hoeveel in werkelijkheid?",["2 meter","4 meter","50 cm","20 meter"],"2 meter","4 × 50 cm = 200 cm, dus 2 meter.","📏"),
+    q("Op een kaart betekent 1 cm 5 km. Hoeveel is 4 cm?",["20 km","9 km","15 km","25 km"],"20 km","Vier keer vijf kilometer is twintig kilometer.","🚗"),
+    q("Een tekening heeft schaal 1:10. Hoeveel is 6 cm in werkelijkheid?",["60 cm","6 cm","600 cm","16 cm"],"60 cm","Zes keer tien centimeter is zestig centimeter.","✏️")
+  ]);
+
 window.STERRENSTAP_DATA = {GROUPS, lessons};
 })();
