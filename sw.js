@@ -1,5 +1,5 @@
 /* SterrenStap: network-first for app updates, cached fallback when offline. */
-const CACHE='sterrenstap-v9-network-first';
+const CACHE='sterrenstap-v10-toddler-pictures';
 const ASSETS=['./','./index.html','./styles.css','./curriculum.js','./app.js','./supabase-config.js','./account-sync.js','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
