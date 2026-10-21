@@ -140,6 +140,7 @@
     if(l.group==='p')readCurrentQuestion();
   }
   const toddlerIcons={'Neus':'👃','Je neus':'👃','Je knie':'🦵','Je elleboog':'💪','Je voet':'🦶','Je voeten':'👣','Je oren':'👂','Je tenen':'🦶','Je haren':'💇','Je vingers':'☝️','Je ogen':'👀','Je mond':'👄','Je handen':'👐','Je knieën':'🦵','Je haar':'💇','Je hoofd':'🙂','Cirkel':'🔴','Vierkant':'🟦','Driehoek':'🔺','Rechthoek':'▭','Ovaal':'🥚','Ster':'⭐'};
+  Object.assign(toddlerIcons,{'Een hond':'🐶','Een kip':'🐔','Een vis':'🐟','Een kat':'🐱','Een muis':'🐭','Een koe':'🐮','Een eend':'🦆','Een slang':'🐍','Een paard':'🐴','Een poes':'🐱','Een vlinder':'🦋','Een varken':'🐷','Een haan':'🐓','Een kikker':'🐸','Een ezel':'🫏','Muis':'🐭','Olifant':'🐘','Kat':'🐱','Konijn':'🐰','Een huis':'🏠','Een schoen':'👟','Een appel':'🍎','Een beker':'🥤','Bus':'🚌','Fiets':'🚲','Mier':'🐜','Boom':'🌳','Potlood':'✏️','Trein':'🚆','Lepel':'🥄','Sleutel':'🔑','Veertje':'🪶','Ballon':'🎈','Auto':'🚗','Blaadje':'🍃'});
   const toddlerColors={'Geel':'#ffd737','Blauw':'#3578ed','Paars':'#9655db','Roze':'#fa82b6','Rood':'#f05252','Groen':'#3aaf73','Zwart':'#252535','Wit':'#ffffff','Bruin':'#99603c','Oranje':'#ff982f'};
   function toddlerAnswer(o){
     if(Object.hasOwn(toddlerColors,o))return `<span class="toddler-color" style="background:${toddlerColors[o]}" aria-hidden="true"></span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
