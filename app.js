@@ -126,9 +126,11 @@
     try{
       window.speechSynthesis.cancel();
       const utterance=new SpeechSynthesisUtterance(String(text).replace(/\s+/g,' '));
-      utterance.lang='nl-NL';utterance.rate=child().group==='p'||child().group==='g1'?0.78:0.92;utterance.pitch=1.04;
+      utterance.lang='nl-NL';utterance.rate=['p','g1','g2'].includes(child().group)?0.83:0.94;utterance.pitch=1.13;
       const voices=window.speechSynthesis.getVoices();
-      const dutch=voices.find(v=>v.lang.toLowerCase()==='nl-nl')||voices.find(v=>v.lang.toLowerCase().startsWith('nl'));
+      const dutchVoices=voices.filter(v=>v.lang.toLowerCase().startsWith('nl'));
+      const femaleNames=/femke|claire|ellen|lotte|anna|saskia|jasmijn|female|vrouw/i;
+      const dutch=dutchVoices.find(v=>femaleNames.test(v.name))||dutchVoices.find(v=>v.lang.toLowerCase()==='nl-nl')||dutchVoices[0];
       if(dutch)utterance.voice=dutch;
       window.speechSynthesis.speak(utterance);
     }catch(e){/* iOS kan audio blokkeren totdat een gebruiker tikt */}
