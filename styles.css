@@ -92,3 +92,17 @@ button:disabled{opacity:1}
 
 /* Playful picture-first toddler lessons */
 .toddler-quiz .quiz-visual{font-size:clamp(55px,8vw,90px);margin:6px 0}.toddler-quiz .answers{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.toddler-quiz .answer{min-height:126px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:12px}.toddler-icon{font-size:clamp(37px,5vw,57px);line-height:1.1}.toddler-color{display:block;width:67px;height:67px;border-radius:50%;border:2px solid #ded9e8;box-shadow:0 3px 9px #2d2a4817}.toddler-answer-label{font-size:15px;line-height:1.2}.toddler-quiz .quiz-tools{margin:8px 0 16px}.toddler-quiz .quiz-tools .btn{font-size:15px;min-height:48px}@media(max-width:600px){.toddler-quiz .answer{min-height:105px}.toddler-color{width:53px;height:53px}.toddler-quiz .quiz-visual{font-size:55px}}
+
+/* Illustrated answers and gentle success celebrations. */
+.picture-frame{position:relative;display:grid;place-items:center;width:92px;height:82px;border-radius:22px;background:linear-gradient(145deg,#fff8e8,#f0edff);overflow:hidden}
+.picture-fallback{font-size:53px;line-height:1}
+.picture-art{position:absolute;inset:0;width:100%;height:100%;padding:8px;object-fit:contain}
+.toddler-quiz .answer:hover .picture-frame{transform:scale(1.05)}
+.toddler-quiz .answer.correct .picture-frame{animation:star-bounce .5s ease}
+.reward-pop{animation:reward-appear .5s cubic-bezier(.2,1.4,.4,1)}
+.reward-pop strong{display:inline-block;animation:star-bounce .7s ease}
+.result-card .big-stars{animation:star-bounce .8s ease}
+@keyframes star-bounce{0%{transform:scale(.65) rotate(-8deg)}55%{transform:scale(1.2) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes reward-appear{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:600px){.picture-frame{width:74px;height:68px}.picture-fallback{font-size:43px}}
+@media(prefers-reduced-motion:reduce){.reward-pop,.reward-pop strong,.result-card .big-stars,.toddler-quiz .answer.correct .picture-frame{animation:none!important}}
