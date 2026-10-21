@@ -182,7 +182,7 @@
       <div class="quiz-top"><button class="btn soft sm" data-action="quit">← Stoppen</button><span>${escapeHtml(l.title)} · ${num} van ${l.questions.length}</span></div>
       <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${l.questions.length}" aria-valuenow="${num-1}"><span style="width:${Math.round((num-1)*100/l.questions.length)}%"></span></div>
       <article class="quiz-card"><div class="quiz-center"><span class="eyebrow">${escapeHtml(l.subject)} · Vraag ${num}</span>${q.passage?`<div class="passage">${escapeHtml(q.passage)}</div>`:''}<div class="quiz-visual" aria-hidden="true">${escapeHtml(q.visual||l.icon)}</div><h1>${escapeHtml(q.question)}</h1><div class="quiz-tools"><button class="btn soft sm" data-action="read">🔊 Lees voor</button></div></div>
-      <div class="answers" role="group" aria-label="Kies het goede antwoord">${q.options.map((o,i)=>`<button class="answer ${chosen!==null?(o===q.answer?'correct':o===chosen?'wrong':''):''}" data-action="answer" data-index="${i}" ${chosen!==null?'disabled':''}>${isToddler?toddlerAnswer(o):escapeHtml(o)}</button>`).join('')}</div>
+      ${l.id==='p-sleepvormen'?`<div class="shape-dropzone" id="shapeDropzone" aria-label="Sleep de juiste vorm hierheen"><span>🎯</span><strong>Sleep de vorm hierheen</strong><small>Of tik op de juiste vorm hieronder</small></div>`:''}<div class="answers ${l.id==='p-sleepvormen'?'shape-options':''}" role="group" aria-label="Kies het goede antwoord">${q.options.map((o,i)=>`<button class="answer ${chosen!==null?(o===q.answer?'correct':o===chosen?'wrong':''):''}" data-action="answer" data-index="${i}" ${l.id==='p-sleepvormen'&&chosen===null?'draggable="true"':''} ${chosen!==null?'disabled':''}>${isToddler?toddlerAnswer(o):escapeHtml(o)}</button>`).join('')}</div>
       ${chosen!==null?`<div id="answerFeedback" class="feedback ${chosen===q.answer?'good reward-pop':'bad'}" role="status"><strong>${chosen===q.answer?'✨ ⭐ ✨ ':''}${message}</strong>${escapeHtml(q.explain)}</div>
       <div class="quiz-continue"><button class="btn primary" data-action="next">${num===l.questions.length?'Bekijk mijn sterren ⭐':'Volgende vraag →'}</button></div>`:''}
       </article><p class="quiz-hint">Je mag het zo vaak proberen als je wilt. Fouten maken hoort bij leren!</p>
@@ -202,6 +202,50 @@
     const feedback=$('answerFeedback');
     if(feedback){feedback.scrollIntoView({block:'nearest',behavior:'smooth'});}
   }
+  let draggedShapeIndex=null;
+  document.addEventListener('dragstart',e=>{
+    const btn=e.target.closest('.shape-options .answer');
+    if(!btn)return;
+    draggedShapeIndex=Number(btn.dataset.index);
+    if(e.dataTransfer)e.dataTransfer.setData('text/plain',String(draggedShapeIndex));
+  });
+  document.addEventListener('dragover',e=>{
+    const zone=e.target.closest('#shapeDropzone');
+    if(zone&&session?.selected===null){e.preventDefault();zone.classList.add('drag-over');}
+  });
+  document.addEventListener('dragleave',e=>{
+    const zone=e.target.closest('#shapeDropzone');
+    if(zone&&!zone.contains(e.relatedTarget))zone.classList.remove('drag-over');
+  });
+  document.addEventListener('drop',e=>{
+    const zone=e.target.closest('#shapeDropzone');
+    if(!zone||session?.selected!==null)return;
+    e.preventDefault();zone.classList.remove('drag-over');
+    const index=Number(e.dataTransfer?.getData('text/plain')||draggedShapeIndex);
+    if(Number.isInteger(index))answerQuestion(index);
+    draggedShapeIndex=null;
+  });
+  let touchShape=null;
+  document.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse')return;
+    const btn=e.target.closest('.shape-options .answer');
+    if(!btn||session?.selected!==null)return;
+    touchShape={index:Number(btn.dataset.index),x:e.clientX,y:e.clientY,dragging:false};
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!touchShape)return;
+    if(Math.hypot(e.clientX-touchShape.x,e.clientY-touchShape.y)>18)touchShape.dragging=true;
+    const zone=$('shapeDropzone');
+    if(zone)zone.classList.toggle('drag-over',touchShape.dragging&&!!document.elementFromPoint(e.clientX,e.clientY)?.closest('#shapeDropzone'));
+  });
+  document.addEventListener('pointerup',e=>{
+    if(!touchShape)return;
+    const shape=touchShape;touchShape=null;
+    const zone=$('shapeDropzone');if(zone)zone.classList.remove('drag-over');
+    if(shape.dragging&&document.elementFromPoint(e.clientX,e.clientY)?.closest('#shapeDropzone')){
+      e.preventDefault();answerQuestion(shape.index);
+    }
+  });
   function nextQuestion(){
     if(!session||session.selected===null)return;
     const l=byId(session.lessonId);
