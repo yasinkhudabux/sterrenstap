@@ -35,7 +35,7 @@
   }
   let state=initState();
   const child=()=>state.children.find(c=>c.id===state.selectedId)||state.children[0];
-  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast('Opslaan lukt niet. Controleer je browseropslag.');}};
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));window.STERRENSTAP_CLOUD?.changed();}catch(e){toast('Opslaan lukt niet. Controleer je browseropslag.');}};
   let view='home',subjectFilter='Alles',session=null,modal=null;
   const NAV=[['home','🏡','Start'],['path','🗺️','Mijn leerpad'],['library','📚','Alle lessen'],['awards','🏆','Beloningen'],['parent','👨‍👩‍👧','Ouderhoek']];
   function progressOf(l,c=child()){return c.progress[l.id]||{};}
@@ -305,6 +305,7 @@
   $('restoreFile').addEventListener('change',e=>restoreData(e.target.files?.[0]));
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal)closeModal();});
   render();
+  window.STERRENSTAP_CLOUD?.connect({read:()=>structuredClone(state),apply:remote=>{if(!Array.isArray(remote.children)||!remote.children.length)return;state=remote;localStorage.setItem(KEY,JSON.stringify(state));session=null;view='home';render();}});
   if('serviceWorker' in navigator&&location.protocol==='https:'){
     window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
   }
