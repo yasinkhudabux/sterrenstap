@@ -137,16 +137,26 @@
     const l=byId(id);if(!l)return;
     session={lessonId:l.id,index:0,score:0,selected:null,history:[],saved:false};
     view='quiz';render();window.scrollTo(0,0);
+    if(l.group==='p')readCurrentQuestion();
   }
+  const toddlerIcons={'Neus':'👃','Je neus':'👃','Je knie':'🦵','Je elleboog':'💪','Je voet':'🦶','Je voeten':'👣','Je oren':'👂','Je tenen':'🦶','Je haren':'💇','Je vingers':'☝️','Je ogen':'👀','Je mond':'👄','Je handen':'👐','Je knieën':'🦵','Je haar':'💇','Je hoofd':'🙂','Cirkel':'🔴','Vierkant':'🟦','Driehoek':'🔺','Rechthoek':'▭','Ovaal':'🥚','Ster':'⭐'};
+  const toddlerColors={'Geel':'#ffd737','Blauw':'#3578ed','Paars':'#9655db','Roze':'#fa82b6','Rood':'#f05252','Groen':'#3aaf73','Zwart':'#252535','Wit':'#ffffff','Bruin':'#99603c','Oranje':'#ff982f'};
+  function toddlerAnswer(o){
+    if(Object.hasOwn(toddlerColors,o))return `<span class="toddler-color" style="background:${toddlerColors[o]}" aria-hidden="true"></span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
+    if(Object.hasOwn(toddlerIcons,o))return `<span class="toddler-icon" aria-hidden="true">${toddlerIcons[o]}</span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
+    if(/^\\d+$/.test(o)||/^[⭐🔴🔺🟦]$/.test(o))return `<span class="toddler-icon" aria-hidden="true">${escapeHtml(o)}</span>`;
+    return `<span class="toddler-answer-label">${escapeHtml(o)}</span>`;
+  }
+  function readCurrentQuestion(){const l=byId(session?.lessonId),q=l?.questions[session?.index];if(q)speak(`${q.passage||''} ${q.question}. ${q.options.join(', ')}`);}
   function question(){
     const l=byId(session?.lessonId);if(!l)return '';
-    const q=l.questions[session.index],num=session.index+1,chosen=session.selected;
+    const q=l.questions[session.index],num=session.index+1,chosen=session.selected,isToddler=l.group==='p';
     const message=chosen!==null?chosen===q.answer?'Helemaal goed! 🌟':'Goed geprobeerd! 💛':'';
-    return `<section class="quiz-wrap">
+    return `<section class="quiz-wrap ${isToddler?'toddler-quiz':''}">
       <div class="quiz-top"><button class="btn soft sm" data-action="quit">← Stoppen</button><span>${escapeHtml(l.title)} · ${num} van ${l.questions.length}</span></div>
       <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${l.questions.length}" aria-valuenow="${num-1}"><span style="width:${Math.round((num-1)*100/l.questions.length)}%"></span></div>
       <article class="quiz-card"><div class="quiz-center"><span class="eyebrow">${escapeHtml(l.subject)} · Vraag ${num}</span>${q.passage?`<div class="passage">${escapeHtml(q.passage)}</div>`:''}<div class="quiz-visual" aria-hidden="true">${escapeHtml(q.visual||l.icon)}</div><h1>${escapeHtml(q.question)}</h1><div class="quiz-tools"><button class="btn soft sm" data-action="read">🔊 Lees voor</button></div></div>
-      <div class="answers" role="group" aria-label="Kies het goede antwoord">${q.options.map((o,i)=>`<button class="answer ${chosen!==null?(o===q.answer?'correct':o===chosen?'wrong':''):''}" data-action="answer" data-index="${i}" ${chosen!==null?'disabled':''}>${escapeHtml(o)}</button>`).join('')}</div>
+      <div class="answers" role="group" aria-label="Kies het goede antwoord">${q.options.map((o,i)=>`<button class="answer ${chosen!==null?(o===q.answer?'correct':o===chosen?'wrong':''):''}" data-action="answer" data-index="${i}" ${chosen!==null?'disabled':''}>${isToddler?toddlerAnswer(o):escapeHtml(o)}</button>`).join('')}</div>
       ${chosen!==null?`<div id="answerFeedback" class="feedback ${chosen===q.answer?'good':'bad'}" role="status"><strong>${message}</strong>${escapeHtml(q.explain)}</div>
       <div class="quiz-continue"><button class="btn primary" data-action="next">${num===l.questions.length?'Bekijk mijn sterren ⭐':'Volgende vraag →'}</button></div>`:''}
       </article><p class="quiz-hint">Je mag het zo vaak proberen als je wilt. Fouten maken hoort bij leren!</p>
@@ -169,7 +179,7 @@
     if(!session||session.selected===null)return;
     const l=byId(session.lessonId);
     if(session.index+1<l.questions.length){
-      session.index++;session.selected=null;view='quiz';render();window.scrollTo({top:0,behavior:'instant'});
+      session.index++;session.selected=null;view='quiz';render();window.scrollTo({top:0,behavior:'instant'});if(l.group==='p')readCurrentQuestion();
     }else{
       finishLesson();view='result';render();window.scrollTo(0,0);
     }
@@ -297,7 +307,7 @@
       case 'answer':answerQuestion(Number(btn.dataset.index));break;
       case 'next':nextQuestion();break;
       case 'quit':if(window.confirm('Wil je stoppen? De antwoorden van deze les worden dan nog niet opgeslagen.')){session=null;navTo('path');}break;
-      case 'read':{const l=byId(session?.lessonId),q=l?.questions[session.index];if(q)speak(`${q.passage||''} ${q.question}. ${q.options.join(', ')}`);break;}
+      case 'read':readCurrentQuestion();break;
       case 'audio':state.audio=!state.audio;if(!state.audio&&window.speechSynthesis)window.speechSynthesis.cancel();save();header();toast(state.audio?'Voorlezen aan':'Voorlezen uit');break;
       case 'profiles':profileModal();break;
       case 'new-profile':profileModal('new');break;
