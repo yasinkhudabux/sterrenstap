@@ -106,3 +106,11 @@ button:disabled{opacity:1}
 @keyframes reward-appear{from{opacity:0;transform:translateY(14px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:600px){.picture-frame{width:74px;height:68px}.picture-fallback{font-size:43px}}
 @media(prefers-reduced-motion:reduce){.reward-pop,.reward-pop strong,.result-card .big-stars,.toddler-quiz .answer.correct .picture-frame{animation:none!important}}
+
+/* Shape sorting: touch-friendly drop target with tap alternative. */
+.shape-dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:132px;margin:0 0 20px;border:3px dashed #9e82ec;border-radius:24px;background:#f5f0ff;color:#5b3fa8;text-align:center;transition:background .15s,border-color .15s,transform .15s}
+.shape-dropzone>span{font-size:39px}.shape-dropzone strong{font-size:19px}.shape-dropzone small{font-size:13px}
+.shape-dropzone.drag-over{background:#dff9e8;border-color:#28a76d;transform:scale(1.015)}
+.shape-options .answer{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.shape-options .answer:active{cursor:grabbing}
+@media(max-width:600px){.shape-dropzone{min-height:116px;margin-bottom:13px}.shape-dropzone>span{font-size:32px}}
