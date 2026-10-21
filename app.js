@@ -137,10 +137,11 @@
     const l=byId(id);if(!l)return;
     session={lessonId:l.id,index:0,score:0,selected:null,history:[],saved:false};
     view='quiz';render();window.scrollTo(0,0);
-    if(l.group==='p')readCurrentQuestion();
+    if(['p','g1','g2'].includes(l.group))readCurrentQuestion();
   }
   const toddlerIcons={'Neus':'👃','Je neus':'👃','Je knie':'🦵','Je elleboog':'💪','Je voet':'🦶','Je voeten':'👣','Je oren':'👂','Je tenen':'🦶','Je haren':'💇','Je vingers':'☝️','Je ogen':'👀','Je mond':'👄','Je handen':'👐','Je knieën':'🦵','Je haar':'💇','Je hoofd':'🙂','Cirkel':'🔴','Vierkant':'🟦','Driehoek':'🔺','Rechthoek':'▭','Ovaal':'🥚','Ster':'⭐'};
   Object.assign(toddlerIcons,{'Een hond':'🐶','Een kip':'🐔','Een vis':'🐟','Een kat':'🐱','Een muis':'🐭','Een koe':'🐮','Een eend':'🦆','Een slang':'🐍','Een paard':'🐴','Een poes':'🐱','Een vlinder':'🦋','Een varken':'🐷','Een haan':'🐓','Een kikker':'🐸','Een ezel':'🫏','Muis':'🐭','Olifant':'🐘','Kat':'🐱','Konijn':'🐰','Een huis':'🏠','Een schoen':'👟','Een appel':'🍎','Een beker':'🥤','Bus':'🚌','Fiets':'🚲','Mier':'🐜','Boom':'🌳','Potlood':'✏️','Trein':'🚆','Lepel':'🥄','Sleutel':'🔑','Veertje':'🪶','Ballon':'🎈','Auto':'🚗','Blaadje':'🍃'});
+  Object.assign(toddlerIcons,{'Boom':'🌳','Kat':'🐱','Roos':'🌹','Maan':'🌙','Appel':'🍎','Vis':'🐟','Hond':'🐶','Schaap':'🐑','Zon':'☀️','Vlinder':'🦋','Slak':'🐌','Regenjas':'🧥','Zonnebril':'🕶️','Zwembroek':'🩳','Sandalen':'🩴','Lente':'🌷','Zomer':'☀️','Herfst':'🍂','Winter':'❄️','Peer':'🍐','Beer':'🐻','Huis':'🏠','Mat':'🟫','Bal':'⚽','Kip':'🐔'});
   const toddlerColors={'Geel':'#ffd737','Blauw':'#3578ed','Paars':'#9655db','Roze':'#fa82b6','Rood':'#f05252','Groen':'#3aaf73','Zwart':'#252535','Wit':'#ffffff','Bruin':'#99603c','Oranje':'#ff982f'};
   function toddlerAnswer(o){
     if(Object.hasOwn(toddlerColors,o))return `<span class="toddler-color" style="background:${toddlerColors[o]}" aria-hidden="true"></span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
@@ -151,7 +152,7 @@
   function readCurrentQuestion(){const l=byId(session?.lessonId),q=l?.questions[session?.index];if(q)speak(`${q.passage||''} ${q.question}. ${q.options.join(', ')}`);}
   function question(){
     const l=byId(session?.lessonId);if(!l)return '';
-    const q=l.questions[session.index],num=session.index+1,chosen=session.selected,isToddler=l.group==='p';
+    const q=l.questions[session.index],num=session.index+1,chosen=session.selected,isToddler=['p','g1','g2'].includes(l.group);
     const message=chosen!==null?chosen===q.answer?'Helemaal goed! 🌟':'Goed geprobeerd! 💛':'';
     return `<section class="quiz-wrap ${isToddler?'toddler-quiz':''}">
       <div class="quiz-top"><button class="btn soft sm" data-action="quit">← Stoppen</button><span>${escapeHtml(l.title)} · ${num} van ${l.questions.length}</span></div>
@@ -180,7 +181,7 @@
     if(!session||session.selected===null)return;
     const l=byId(session.lessonId);
     if(session.index+1<l.questions.length){
-      session.index++;session.selected=null;view='quiz';render();window.scrollTo({top:0,behavior:'instant'});if(l.group==='p')readCurrentQuestion();
+      session.index++;session.selected=null;view='quiz';render();window.scrollTo({top:0,behavior:'instant'});if(['p','g1','g2'].includes(l.group))readCurrentQuestion();
     }else{
       finishLesson();view='result';render();window.scrollTo(0,0);
     }
