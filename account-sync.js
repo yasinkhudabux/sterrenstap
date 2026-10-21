@@ -5,6 +5,14 @@ const cfg=window.STERRENSTAP_SUPABASE;
 const sessionKey='sterrenstap_parent_session';
 let session=null,adapter=null,busy=false,timer,dirty=false;
 try{session=JSON.parse(localStorage.getItem(sessionKey)||'null')}catch(_){}
+// Supabase email confirmation returns a session in the URL fragment.
+const fragment=new URLSearchParams(location.hash.slice(1));
+if(fragment.get('access_token')&&fragment.get('refresh_token')){
+ const expires=Number(fragment.get('expires_in')||3600);
+ session={access_token:fragment.get('access_token'),refresh_token:fragment.get('refresh_token'),expires_at:Math.floor(Date.now()/1000)+expires};
+ localStorage.setItem(sessionKey,JSON.stringify(session));
+ history.replaceState(null,'',location.pathname+location.search);
+}
 function setSession(value){session=value;if(value)localStorage.setItem(sessionKey,JSON.stringify(value));else localStorage.removeItem(sessionKey);render();}
 function status(value){const el=document.getElementById('cloudStatus');if(el)el.textContent=value;}
 async function request(path,method='GET',body,authorized=false){
@@ -27,14 +35,22 @@ async function accessToken(){
  return session?.access_token;
 }
 async function signIn(email,password,register=false){
- const s=await request(register?'/auth/v1/signup':'/auth/v1/token?grant_type=password','POST',{email,password});
+ const path=register?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
+ const payload=register?{email,password,options:{email_redirect_to:location.origin+location.pathname}}:{email,password};
+ const s=await request(path,'POST',payload);
  if(!s.access_token){status('Bevestig je e-mailadres en log daarna in.');return;}
- setSession(s);await load();status('☁️ Account verbonden');
+ setSession(s);await load();status('☁️ Je bent ingelogd');
+}
+async function hydrateUser(){
+ if(!session||session.user?.id)return;
+ const data=await request('/auth/v1/user','GET',undefined,true);
+ session.user=data;localStorage.setItem(sessionKey,JSON.stringify(session));
 }
 async function load(){
  if(!adapter||!session||busy||dirty)return;
  busy=true;
  try{
+  await hydrateUser();
   const data=await request('/rest/v1/account_state?select=state&user_id=eq.'+encodeURIComponent(session.user.id),'GET',undefined,true);
   if(data.length&&Array.isArray(data[0].state?.children)&&data[0].state.children.length){
    adapter.apply(data[0].state);status('☁️ Voortgang geladen');
@@ -65,6 +81,10 @@ window.STERRENSTAP_CLOUD={
 document.addEventListener('DOMContentLoaded',()=>{
  render();
  const dialog=document.getElementById('accountDialog'),form=document.getElementById('accountForm');
+ const mode=form?.querySelector('[name=register]'),submit=form?.querySelector('button[type=submit]');
+ const syncMode=()=>{if(submit)submit.textContent=mode?.checked?'Account aanmaken':'Inloggen';};
+ mode?.addEventListener('change',syncMode);syncMode();
+ if(session){hydrateUser().then(()=>{render();if(adapter)load();}).catch(()=>{});}
  document.getElementById('accountClose')?.addEventListener('click',()=>dialog.close());
  form?.addEventListener('submit',async e=>{
   e.preventDefault();
