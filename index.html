@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f9f8ff">
+  <meta name="description" content="SterrenStap: leren, oefenen en groeien. Interactieve Nederlandse lessen vanaf 3 jaar t/m groep 8.">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SterrenStap">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>SterrenStap — elke stap een ster</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="curriculum.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <button class="brand" data-action="nav" data-view="home" aria-label="SterrenStap: naar start">
+        <span class="brand-icon" aria-hidden="true">✦</span><span>Sterren<span class="brand-purple">Stap</span><small>elke stap een ster</small></span>
+      </button>
+      <div class="sidebar-label">MIJN AVONTUUR</div>
+      <nav id="sideNav" class="nav" aria-label="Hoofdnavigatie"></nav>
+      <div class="sidebar-spacer"></div>
+      <div class="side-tips"><div class="side-tips-star">🌟</div><strong>Een beetje elke dag!</strong><p>10 minuutjes oefenen is al een mooie stap.</p><button data-action="nav" data-view="path">Bekijk mijn leerpad <span aria-hidden="true">↗</span></button></div>
+      <div class="side-note">Gemaakt om spelend te groeien ♡</div>
+    </aside>
+    <div class="main-area">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-icon">✦</span><strong>Sterren<span class="brand-purple">Stap</span></strong></div>
+        <div class="breadcrumb" id="breadcrumb">Welkom terug!</div>
+        <div class="top-actions">
+          <button class="sound-btn" data-action="audio" id="soundBtn" aria-label="Voorlezen aan of uit" title="Voorlezen aan of uit">🔊</button>
+          <div class="header-star"><span>⭐</span><strong id="headerStars">0</strong></div>
+          <button class="profile-btn" data-action="profiles" aria-label="Kies een kinderprofiel"><span id="headerAvatar" class="tiny-avatar">🦊</span><span class="profile-text" id="headerProfile">Mijn kind</span><span class="chevron">⌄</span></button>
+        </div>
+      </header>
+      <main id="main" class="main" tabindex="-1"><noscript>Zet JavaScript aan om SterrenStap te gebruiken.</noscript></main>
+      <footer class="footer">SterrenStap · Kleine stappen, grote sprongen · Voorbeeldleeromgeving</footer>
+    </div>
+  </div>
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobiele navigatie"></nav>
+  <div id="modalRoot"></div>
+  <div id="toastRoot" role="status" aria-live="polite"></div>
+  <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+</body>
+</html>
