@@ -195,6 +195,20 @@
     </article></div>`;
   }
   const subjectName=s=>escapeHtml(s.subject);
+  function weeklyOverview(c=child()){
+    const days=Array.from({length:7},(_,i)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(6-i));return {key:dateKey(d),label:d.toLocaleDateString('nl-NL',{weekday:'short'}),count:0};});
+    const map=new Map(days.map(d=>[d.key,d]));
+    for(const h of c.history){const day=map.get(dateKey(h.date));if(day)day.count++;}
+    const max=Math.max(1,...days.map(d=>d.count));
+    return `<div class="panel parent-week"><h3>📅 Afgelopen 7 dagen</h3><p>Hoeveel lessen zijn er per dag geoefend?</p><div class="parent-week-bars" role="img" aria-label="${escapeHtml(days.map(d=>d.label+': '+d.count+' lessen').join(', '))}">${days.map(d=>`<div class="parent-week-day"><strong>${d.count||'–'}</strong><span class="parent-week-track"><span style="height:${Math.max(5,Math.round(d.count/max*100))}%"></span></span><small>${escapeHtml(d.label)}</small></div>`).join('')}</div></div>`;
+  }
+  function parentHighlights(c=child()){
+    const rows=subjectData(c).filter(x=>x.count>0);
+    if(!rows.length)return '<div class="panel"><h3>🌱 Jouw kind groeit</h3><p>Na een paar lessen verschijnen hier sterke punten en oefentips op basis van de gemaakte vragen.</p></div>';
+    const best=[...rows].sort((a,b)=>b.percent-a.percent)[0];
+    const focus=rows.find(x=>x.percent<80);
+    return `<div class="panel"><h3>🌟 Sterke punten & oefentips</h3><div class="parent-highlight"><span>💚 Gaat goed</span><strong>${subjectName(best)} · ${best.percent}% goed</strong></div>${focus?`<div class="parent-highlight"><span>🎯 Extra oefenen</span><strong>${subjectName(focus)} · ${focus.percent}% goed</strong></div>`:'<p class="muted mt">Er is momenteel geen vak onder de 80% gevonden.</p>'}<p class="small mt">Indicatie op basis van gemaakte oefeningen; geen officiële niveau- of vaardigheidstoets.</p></div>`;
+  }
   function parent(){
     const c=child(),rows=subjectData(c),weak=weakSubject(c),g=grade(c.group),sorted=[...c.history].reverse().slice(0,8);
     const pct=Math.round(groupDone(c)*100/groupLessons(c).length);
@@ -203,7 +217,7 @@
       c.history.length?'Er is geen duidelijk oefenonderwerp onder 80% gevonden. Blijf gevarieerd oefenen!':'Na de eerste lessen zie je hier waar extra oefenen handig is.';
     return `<div class="intro-card"><span class="eyebrow">👨‍👩‍👧 Voor ouders & verzorgers</span><h1>Zo groeit ${escapeHtml(c.name)} 🌱</h1><p>Bekijk het oefenritme, het persoonlijke leerpad en onderwerpen die extra aandacht verdienen. Deze demonstratie is geen gevalideerde niveautoets.</p></div>
       <div class="stats">${stat('⭐',stars(c),'Sterren verzameld')}${stat('📚',completed(c),'Unieke lessen')}${stat('🎯',c.history.length?accuracy(c)+'%':'–','Vragen goed')}</div>
-      <div class="parent-split"><div class="panel"><h3>📊 Leerontwikkeling</h3><p class="muted">${escapeHtml(g.name)} · ${groupDone(c)} van ${grouped.length} lessen geoefend</p><div class="mini-progress mt"><span style="width:${pct}%"></span></div>
+      <div class="parent-overview">${weeklyOverview(c)}${parentHighlights(c)}</div><div class="parent-split"><div class="panel"><h3>📊 Leerontwikkeling</h3><p class="muted">${escapeHtml(g.name)} · ${groupDone(c)} van ${grouped.length} lessen geoefend</p><div class="mini-progress mt"><span style="width:${pct}%"></span></div>
       <h3 class="mt">Resultaten per vak</h3>${rows.length?rows.map(s=>`<div class="bar-row"><span>${subjectName(s)}</span><div class="mini-progress"><span style="width:${s.percent}%"></span></div><strong>${s.percent}%</strong></div>`).join(''):'<div class="empty mt">Er zijn nog geen resultaten. Begin samen aan een les!</div>'}
       <div class="parent-tip"><strong>💡 Persoonlijk oefenadvies</strong><p>${area}</p></div></div>
       <div class="panel"><h3>⚙️ Instellingen</h3><div class="settings-row"><label for="childNameInput">Naam kind</label><input class="field" id="childNameInput" maxlength="24" value="${escapeHtml(c.name)}" aria-label="Naam van het kind"></div>
@@ -215,8 +229,8 @@
       <button class="link-btn" style="margin-top:13px" data-action="edit-profile">Avatar wijzigen / profiel beheren →</button></div></div>
       ${section('🕒 Laatst geoefend','Bekijk recente lessen en de score.')}
       <div class="panel">${sorted.length?sorted.map(h=>{const l=byId(h.lessonId);if(!l)return '';return `<div class="recent-row"><span class="recent-icon">${l.icon}</span><div class="grow"><strong>${escapeHtml(l.title)}</strong><small>${escapeHtml(new Date(h.date).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'}))} · ${escapeHtml(grade(l.group).name)}</small></div><strong>${Number(h.score)}/${Number(h.total)}</strong></div>`;}).join(''):'<div class="empty">Nog geen lesresultaten beschikbaar.</div>'}</div>
-      ${section('🔐 Privacy & back-up','Gegevens staan in deze versie alleen op het apparaat waarop je oefent.')}
-      <div class="panel"><p class="muted">Er is geen account, cloudopslag, tracking of online AI-coach. De voortgang kan verdwijnen wanneer Safari-websitegegevens worden gewist of privé-navigatie wordt gebruikt. Maak af en toe een back-up.</p><div class="export-actions"><button class="btn soft sm" data-action="export">⬇️ Download back-up</button><button class="btn soft sm" data-action="import">⬆️ Back-up terugzetten</button><button class="btn danger sm" data-action="reset">Wis resultaten</button></div></div>`;
+      ${section('🔐 Privacy & back-up','Back-up en gegevensbeheer')}
+      <div class="panel"><p class="muted">Wanneer je met je ouderaccount bent ingelogd, wordt je voortgang ook online opgeslagen. Je kunt daarnaast zelf een back-up downloaden. Bewaar die op een veilige plek.</p><div class="export-actions"><button class="btn soft sm" data-action="export">⬇️ Download back-up</button><button class="btn soft sm" data-action="import">⬆️ Back-up terugzetten</button><button class="btn danger sm" data-action="reset">Wis resultaten</button></div></div>`;
   }
   function render(){
     header();
