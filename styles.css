@@ -114,3 +114,6 @@ button:disabled{opacity:1}
 .shape-options .answer{cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .shape-options .answer:active{cursor:grabbing}
 @media(max-width:600px){.shape-dropzone{min-height:116px;margin-bottom:13px}.shape-dropzone>span{font-size:32px}}
+
+/* Counting game: number plus a matching quantity of dots. */
+.count-number{font-size:clamp(32px,5vw,50px);font-weight:900;line-height:1}.count-dots{display:block;font-size:16px;letter-spacing:3px;color:#8161d5;line-height:1.4;max-width:140px;overflow-wrap:anywhere}
