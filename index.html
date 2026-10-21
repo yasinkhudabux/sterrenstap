@@ -17,6 +17,8 @@
   <title>SterrenStap — elke stap een ster</title>
   <link rel="stylesheet" href="styles.css">
   <script defer src="curriculum.js"></script>
+  <script defer src="supabase-config.js"></script>
+  <script defer src="account-sync.js"></script>
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -35,7 +37,7 @@
       <header class="topbar">
         <div class="mobile-brand"><span class="brand-icon">✦</span><strong>Sterren<span class="brand-purple">Stap</span></strong></div>
         <div class="breadcrumb" id="breadcrumb">Welkom terug!</div>
-        <div class="top-actions">
+        <div class="top-actions"><div id="cloudAuth"></div>
           <button class="sound-btn" data-action="audio" id="soundBtn" aria-label="Voorlezen aan of uit" title="Voorlezen aan of uit">🔊</button>
           <div class="header-star"><span>⭐</span><strong id="headerStars">0</strong></div>
           <button class="profile-btn" data-action="profiles" aria-label="Kies een kinderprofiel"><span id="headerAvatar" class="tiny-avatar">🦊</span><span class="profile-text" id="headerProfile">Mijn kind</span><span class="chevron">⌄</span></button>
@@ -48,6 +50,7 @@
   <nav class="mobile-nav" id="mobileNav" aria-label="Mobiele navigatie"></nav>
   <div id="modalRoot"></div>
   <div id="toastRoot" role="status" aria-live="polite"></div>
+  <dialog id="accountDialog" aria-label="Ouderaccount" class="account-dialog"><form id="accountForm"><h2>☁️ Ouderaccount</h2><p>Bewaar de voortgang op al je apparaten.</p><label>E-mailadres<input class="field" type="email" name="email" autocomplete="email" required></label><label>Wachtwoord<input class="field" type="password" name="password" autocomplete="current-password" minlength="6" required></label><label><input type="checkbox" name="register"> Nieuw account registreren</label><button class="btn primary" type="submit">Doorgaan</button><button class="btn soft" id="accountClose" type="button">Sluiten</button><p id="cloudStatus" role="status"></p></form></dialog>
   <input type="file" id="restoreFile" accept="application/json,.json" hidden>
 </body>
 </html>
