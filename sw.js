@@ -1,5 +1,5 @@
 /* SterrenStap: offline bestanden cachen, geen persoonlijke gegevens cachen. */
-const CACHE='sterrenstap-v3-account';
+const CACHE='sterrenstap-v4-auth';
 const ASSETS=['./','./index.html','./styles.css','./curriculum.js','./app.js','./supabase-config.js','./account-sync.js','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
