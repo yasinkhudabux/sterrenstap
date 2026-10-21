@@ -35,7 +35,7 @@
   }
   let state=initState();
   const child=()=>state.children.find(c=>c.id===state.selectedId)||state.children[0];
-  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast('Opslaan lukt niet. Controleer je browseropslag.');}};
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state));window.STERRENSTAP_CLOUD?.changed();}catch(e){toast('Opslaan lukt niet. Controleer je browseropslag.');}};
   let view='home',subjectFilter='Alles',session=null,modal=null;
   const NAV=[['home','🏡','Start'],['path','🗺️','Mijn leerpad'],['library','📚','Alle lessen'],['awards','🏆','Beloningen'],['parent','👨‍👩‍👧','Ouderhoek']];
   function progressOf(l,c=child()){return c.progress[l.id]||{};}
@@ -126,9 +126,11 @@
     try{
       window.speechSynthesis.cancel();
       const utterance=new SpeechSynthesisUtterance(String(text).replace(/\s+/g,' '));
-      utterance.lang='nl-NL';utterance.rate=child().group==='p'||child().group==='g1'?0.78:0.92;utterance.pitch=1.04;
+      utterance.lang='nl-NL';utterance.rate=['p','g1','g2'].includes(child().group)?0.83:0.94;utterance.pitch=1.13;
       const voices=window.speechSynthesis.getVoices();
-      const dutch=voices.find(v=>v.lang.toLowerCase()==='nl-nl')||voices.find(v=>v.lang.toLowerCase().startsWith('nl'));
+      const dutchVoices=voices.filter(v=>v.lang.toLowerCase().startsWith('nl'));
+      const femaleNames=/femke|claire|ellen|lotte|anna|saskia|jasmijn|female|vrouw/i;
+      const dutch=dutchVoices.find(v=>femaleNames.test(v.name))||dutchVoices.find(v=>v.lang.toLowerCase()==='nl-nl')||dutchVoices[0];
       if(dutch)utterance.voice=dutch;
       window.speechSynthesis.speak(utterance);
     }catch(e){/* iOS kan audio blokkeren totdat een gebruiker tikt */}
@@ -137,17 +139,53 @@
     const l=byId(id);if(!l)return;
     session={lessonId:l.id,index:0,score:0,selected:null,history:[],saved:false};
     view='quiz';render();window.scrollTo(0,0);
+    if(['p','g1','g2'].includes(l.group))readCurrentQuestion();
   }
+  const toddlerIcons={'Neus':'👃','Je neus':'👃','Je knie':'🦵','Je elleboog':'💪','Je voet':'🦶','Je voeten':'👣','Je oren':'👂','Je tenen':'🦶','Je haren':'💇','Je vingers':'☝️','Je ogen':'👀','Je mond':'👄','Je handen':'👐','Je knieën':'🦵','Je haar':'💇','Je hoofd':'🙂','Cirkel':'🔴','Vierkant':'🟦','Driehoek':'🔺','Rechthoek':'▭','Ovaal':'🥚','Ster':'⭐'};
+  Object.assign(toddlerIcons,{'Een hond':'🐶','Een kip':'🐔','Een vis':'🐟','Een kat':'🐱','Een muis':'🐭','Een koe':'🐮','Een eend':'🦆','Een slang':'🐍','Een paard':'🐴','Een poes':'🐱','Een vlinder':'🦋','Een varken':'🐷','Een haan':'🐓','Een kikker':'🐸','Een ezel':'🫏','Muis':'🐭','Olifant':'🐘','Kat':'🐱','Konijn':'🐰','Een huis':'🏠','Een schoen':'👟','Een appel':'🍎','Een beker':'🥤','Bus':'🚌','Fiets':'🚲','Mier':'🐜','Boom':'🌳','Potlood':'✏️','Trein':'🚆','Lepel':'🥄','Sleutel':'🔑','Veertje':'🪶','Ballon':'🎈','Auto':'🚗','Blaadje':'🍃'});
+  Object.assign(toddlerIcons,{'Boom':'🌳','Kat':'🐱','Roos':'🌹','Maan':'🌙','Appel':'🍎','Vis':'🐟','Hond':'🐶','Schaap':'🐑','Zon':'☀️','Vlinder':'🦋','Slak':'🐌','Regenjas':'🧥','Zonnebril':'🕶️','Zwembroek':'🩳','Sandalen':'🩴','Lente':'🌷','Zomer':'☀️','Herfst':'🍂','Winter':'❄️','Peer':'🍐','Beer':'🐻','Huis':'🏠','Mat':'🟫','Bal':'⚽','Kip':'🐔'});
+  const toddlerColors={'Geel':'#ffd737','Blauw':'#3578ed','Paars':'#9655db','Roze':'#fa82b6','Rood':'#f05252','Groen':'#3aaf73','Zwart':'#252535','Wit':'#ffffff','Bruin':'#99603c','Oranje':'#ff982f'};
+  function illustratedEmoji(emoji){
+    const code=[...emoji].filter(c=>c.codePointAt(0)!==0xfe0f).map(c=>c.codePointAt(0).toString(16)).join('-');
+    const url='https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/'+code+'.svg';
+    return `<span class="picture-frame"><span class="picture-fallback" aria-hidden="true">${emoji}</span><img class="picture-art" src="${url}" alt="" loading="lazy" decoding="async"></span>`;
+  }
+  function playRewardSound(success){
+    if(!state.audio)return;
+    try{
+      const AudioContext=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContext)return;
+      const ctx=new AudioContext();
+      const notes=success?[523.25,659.25,783.99]:[392,440];
+      notes.forEach((frequency,index)=>{
+        const oscillator=ctx.createOscillator(),gain=ctx.createGain(),time=ctx.currentTime+index*0.11;
+        oscillator.type='sine';oscillator.frequency.value=frequency;
+        gain.gain.setValueAtTime(0.0001,time);
+        gain.gain.exponentialRampToValueAtTime(0.085,time+0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001,time+0.18);
+        oscillator.connect(gain);gain.connect(ctx.destination);
+        oscillator.start(time);oscillator.stop(time+0.2);
+      });
+      setTimeout(()=>ctx.close().catch(()=>{}),750);
+    }catch(e){/* Optional audio. */}
+  }
+  function toddlerAnswer(o){
+    if(Object.hasOwn(toddlerColors,o))return `<span class="toddler-color" style="background:${toddlerColors[o]}" aria-hidden="true"></span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
+    if(Object.hasOwn(toddlerIcons,o))return `${illustratedEmoji(toddlerIcons[o])}<span class="toddler-answer-label">${escapeHtml(o)}</span>`;
+    if(/^[0-9]+$/.test(o)||/^[⭐🔴🔺🟦]$/.test(o))return `<span class="toddler-icon" aria-hidden="true">${escapeHtml(o)}</span>`;
+    return `<span class="toddler-answer-label">${escapeHtml(o)}</span>`;
+  }
+  function readCurrentQuestion(){const l=byId(session?.lessonId),q=l?.questions[session?.index];if(q)speak(`${q.passage||''} ${q.question}. ${q.options.join(', ')}`);}
   function question(){
     const l=byId(session?.lessonId);if(!l)return '';
-    const q=l.questions[session.index],num=session.index+1,chosen=session.selected;
+    const q=l.questions[session.index],num=session.index+1,chosen=session.selected,isToddler=['p','g1','g2'].includes(l.group);
     const message=chosen!==null?chosen===q.answer?'Helemaal goed! 🌟':'Goed geprobeerd! 💛':'';
-    return `<section class="quiz-wrap">
+    return `<section class="quiz-wrap ${isToddler?'toddler-quiz':''}">
       <div class="quiz-top"><button class="btn soft sm" data-action="quit">← Stoppen</button><span>${escapeHtml(l.title)} · ${num} van ${l.questions.length}</span></div>
       <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${l.questions.length}" aria-valuenow="${num-1}"><span style="width:${Math.round((num-1)*100/l.questions.length)}%"></span></div>
-      <article class="quiz-card"><div class="quiz-center"><span class="eyebrow">${escapeHtml(l.subject)} · Vraag ${num}</span>${q.passage?`<div class="passage">${escapeHtml(q.passage)}</div>`:''}<div class="quiz-visual" aria-hidden="true">${escapeHtml(q.visual||l.icon)}</div><h1>${escapeHtml(q.question)}</h1><div class="quiz-tools"><button class="btn soft sm" data-action="read">🔊 Lees voor</button></div></div>
-      <div class="answers" role="group" aria-label="Kies het goede antwoord">${q.options.map((o,i)=>`<button class="answer ${chosen!==null?(o===q.answer?'correct':o===chosen?'wrong':''):''}" data-action="answer" data-index="${i}" ${chosen!==null?'disabled':''}>${escapeHtml(o)}</button>`).join('')}</div>
-      ${chosen!==null?`<div id="answerFeedback" class="feedback ${chosen===q.answer?'good':'bad'}" role="status"><strong>${message}</strong>${escapeHtml(q.explain)}</div>
+      <article class="quiz-card"><div class="quiz-center"><span class="eyebrow">${escapeHtml(l.subject)} · Vraag ${num}</span>${q.passage?`<div class="passage">${escapeHtml(q.passage)}</div>`:''}<div class="quiz-visual" aria-hidden="true">${l.id==='p-plaatjes'?'🐾':escapeHtml(q.visual||l.icon)}</div><h1>${escapeHtml(q.question)}</h1><div class="quiz-tools"><button class="btn soft sm" data-action="read">🔊 Lees voor</button></div></div>
+      ${l.id==='p-sleepvormen'?`<div class="shape-dropzone" id="shapeDropzone" aria-label="Sleep de juiste vorm hierheen"><span>🎯</span><strong>Sleep de vorm hierheen</strong><small>Of tik op de juiste vorm hieronder</small></div>`:''}<div class="answers ${l.id==='p-sleepvormen'?'shape-options':''}" role="group" aria-label="Kies het goede antwoord">${q.options.map((o,i)=>`<button class="answer ${chosen!==null?(o===q.answer?'correct':o===chosen?'wrong':''):''}" data-action="answer" data-index="${i}" ${l.id==='p-sleepvormen'&&chosen===null?'draggable="true"':''} ${chosen!==null?'disabled':''}>${l.id==='p-telspel'?`<span class="count-number">${escapeHtml(o)}</span><span class="count-dots" aria-hidden="true">${'●'.repeat(Math.min(6,Number(o)||0))}</span>`:isToddler?toddlerAnswer(o):escapeHtml(o)}</button>`).join('')}</div>
+      ${chosen!==null?`<div id="answerFeedback" class="feedback ${chosen===q.answer?'good reward-pop':'bad'}" role="status"><strong>${chosen===q.answer?'✨ ⭐ ✨ ':''}${message}</strong>${escapeHtml(q.explain)}</div>
       <div class="quiz-continue"><button class="btn primary" data-action="next">${num===l.questions.length?'Bekijk mijn sterren ⭐':'Volgende vraag →'}</button></div>`:''}
       </article><p class="quiz-hint">Je mag het zo vaak proberen als je wilt. Fouten maken hoort bij leren!</p>
     </section>`;
@@ -161,15 +199,60 @@
     if(good)session.score++;
     session.history.push({question:session.index,answer:session.selected,correct:good});
     render();
+    playRewardSound(good);
     if(good)speak('Heel goed! '+q.explain);else speak('Goed geprobeerd. '+q.explain);
     const feedback=$('answerFeedback');
     if(feedback){feedback.scrollIntoView({block:'nearest',behavior:'smooth'});}
   }
+  let draggedShapeIndex=null;
+  document.addEventListener('dragstart',e=>{
+    const btn=e.target.closest('.shape-options .answer');
+    if(!btn)return;
+    draggedShapeIndex=Number(btn.dataset.index);
+    if(e.dataTransfer)e.dataTransfer.setData('text/plain',String(draggedShapeIndex));
+  });
+  document.addEventListener('dragover',e=>{
+    const zone=e.target.closest('#shapeDropzone');
+    if(zone&&session?.selected===null){e.preventDefault();zone.classList.add('drag-over');}
+  });
+  document.addEventListener('dragleave',e=>{
+    const zone=e.target.closest('#shapeDropzone');
+    if(zone&&!zone.contains(e.relatedTarget))zone.classList.remove('drag-over');
+  });
+  document.addEventListener('drop',e=>{
+    const zone=e.target.closest('#shapeDropzone');
+    if(!zone||session?.selected!==null)return;
+    e.preventDefault();zone.classList.remove('drag-over');
+    const index=Number(e.dataTransfer?.getData('text/plain')||draggedShapeIndex);
+    if(Number.isInteger(index))answerQuestion(index);
+    draggedShapeIndex=null;
+  });
+  let touchShape=null;
+  document.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse')return;
+    const btn=e.target.closest('.shape-options .answer');
+    if(!btn||session?.selected!==null)return;
+    touchShape={index:Number(btn.dataset.index),x:e.clientX,y:e.clientY,dragging:false};
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!touchShape)return;
+    if(Math.hypot(e.clientX-touchShape.x,e.clientY-touchShape.y)>18)touchShape.dragging=true;
+    const zone=$('shapeDropzone');
+    if(zone)zone.classList.toggle('drag-over',touchShape.dragging&&!!document.elementFromPoint(e.clientX,e.clientY)?.closest('#shapeDropzone'));
+  });
+  document.addEventListener('pointerup',e=>{
+    if(!touchShape)return;
+    const shape=touchShape;touchShape=null;
+    const zone=$('shapeDropzone');if(zone)zone.classList.remove('drag-over');
+    if(shape.dragging&&document.elementFromPoint(e.clientX,e.clientY)?.closest('#shapeDropzone')){
+      e.preventDefault();answerQuestion(shape.index);
+    }
+  });
   function nextQuestion(){
     if(!session||session.selected===null)return;
     const l=byId(session.lessonId);
     if(session.index+1<l.questions.length){
-      session.index++;session.selected=null;view='quiz';render();window.scrollTo({top:0,behavior:'instant'});
+      session.index++;session.selected=null;view='quiz';render();window.scrollTo({top:0,behavior:'instant'});if(['p','g1','g2'].includes(l.group))readCurrentQuestion();
     }else{
       finishLesson();view='result';render();window.scrollTo(0,0);
     }
@@ -195,6 +278,20 @@
     </article></div>`;
   }
   const subjectName=s=>escapeHtml(s.subject);
+  function weeklyOverview(c=child()){
+    const days=Array.from({length:7},(_,i)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(6-i));return {key:dateKey(d),label:d.toLocaleDateString('nl-NL',{weekday:'short'}),count:0};});
+    const map=new Map(days.map(d=>[d.key,d]));
+    for(const h of c.history){const day=map.get(dateKey(h.date));if(day)day.count++;}
+    const max=Math.max(1,...days.map(d=>d.count));
+    return `<div class="panel parent-week"><h3>📅 Afgelopen 7 dagen</h3><p>Hoeveel lessen zijn er per dag geoefend?</p><div class="parent-week-bars" role="img" aria-label="${escapeHtml(days.map(d=>d.label+': '+d.count+' lessen').join(', '))}">${days.map(d=>`<div class="parent-week-day"><strong>${d.count||'–'}</strong><span class="parent-week-track"><span style="height:${Math.max(5,Math.round(d.count/max*100))}%"></span></span><small>${escapeHtml(d.label)}</small></div>`).join('')}</div></div>`;
+  }
+  function parentHighlights(c=child()){
+    const rows=subjectData(c).filter(x=>x.count>0);
+    if(!rows.length)return '<div class="panel"><h3>🌱 Jouw kind groeit</h3><p>Na een paar lessen verschijnen hier sterke punten en oefentips op basis van de gemaakte vragen.</p></div>';
+    const best=[...rows].sort((a,b)=>b.percent-a.percent)[0];
+    const focus=rows.find(x=>x.percent<80);
+    return `<div class="panel"><h3>🌟 Sterke punten & oefentips</h3><div class="parent-highlight"><span>💚 Gaat goed</span><strong>${subjectName(best)} · ${best.percent}% goed</strong></div>${focus?`<div class="parent-highlight"><span>🎯 Extra oefenen</span><strong>${subjectName(focus)} · ${focus.percent}% goed</strong></div>`:'<p class="muted mt">Er is momenteel geen vak onder de 80% gevonden.</p>'}<p class="small mt">Indicatie op basis van gemaakte oefeningen; geen officiële niveau- of vaardigheidstoets.</p></div>`;
+  }
   function parent(){
     const c=child(),rows=subjectData(c),weak=weakSubject(c),g=grade(c.group),sorted=[...c.history].reverse().slice(0,8);
     const pct=Math.round(groupDone(c)*100/groupLessons(c).length);
@@ -203,7 +300,7 @@
       c.history.length?'Er is geen duidelijk oefenonderwerp onder 80% gevonden. Blijf gevarieerd oefenen!':'Na de eerste lessen zie je hier waar extra oefenen handig is.';
     return `<div class="intro-card"><span class="eyebrow">👨‍👩‍👧 Voor ouders & verzorgers</span><h1>Zo groeit ${escapeHtml(c.name)} 🌱</h1><p>Bekijk het oefenritme, het persoonlijke leerpad en onderwerpen die extra aandacht verdienen. Deze demonstratie is geen gevalideerde niveautoets.</p></div>
       <div class="stats">${stat('⭐',stars(c),'Sterren verzameld')}${stat('📚',completed(c),'Unieke lessen')}${stat('🎯',c.history.length?accuracy(c)+'%':'–','Vragen goed')}</div>
-      <div class="parent-split"><div class="panel"><h3>📊 Leerontwikkeling</h3><p class="muted">${escapeHtml(g.name)} · ${groupDone(c)} van ${grouped.length} lessen geoefend</p><div class="mini-progress mt"><span style="width:${pct}%"></span></div>
+      <div class="parent-overview">${weeklyOverview(c)}${parentHighlights(c)}</div><div class="parent-split"><div class="panel"><h3>📊 Leerontwikkeling</h3><p class="muted">${escapeHtml(g.name)} · ${groupDone(c)} van ${grouped.length} lessen geoefend</p><div class="mini-progress mt"><span style="width:${pct}%"></span></div>
       <h3 class="mt">Resultaten per vak</h3>${rows.length?rows.map(s=>`<div class="bar-row"><span>${subjectName(s)}</span><div class="mini-progress"><span style="width:${s.percent}%"></span></div><strong>${s.percent}%</strong></div>`).join(''):'<div class="empty mt">Er zijn nog geen resultaten. Begin samen aan een les!</div>'}
       <div class="parent-tip"><strong>💡 Persoonlijk oefenadvies</strong><p>${area}</p></div></div>
       <div class="panel"><h3>⚙️ Instellingen</h3><div class="settings-row"><label for="childNameInput">Naam kind</label><input class="field" id="childNameInput" maxlength="24" value="${escapeHtml(c.name)}" aria-label="Naam van het kind"></div>
@@ -215,8 +312,8 @@
       <button class="link-btn" style="margin-top:13px" data-action="edit-profile">Avatar wijzigen / profiel beheren →</button></div></div>
       ${section('🕒 Laatst geoefend','Bekijk recente lessen en de score.')}
       <div class="panel">${sorted.length?sorted.map(h=>{const l=byId(h.lessonId);if(!l)return '';return `<div class="recent-row"><span class="recent-icon">${l.icon}</span><div class="grow"><strong>${escapeHtml(l.title)}</strong><small>${escapeHtml(new Date(h.date).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'}))} · ${escapeHtml(grade(l.group).name)}</small></div><strong>${Number(h.score)}/${Number(h.total)}</strong></div>`;}).join(''):'<div class="empty">Nog geen lesresultaten beschikbaar.</div>'}</div>
-      ${section('🔐 Privacy & back-up','Gegevens staan in deze versie alleen op het apparaat waarop je oefent.')}
-      <div class="panel"><p class="muted">Er is geen account, cloudopslag, tracking of online AI-coach. De voortgang kan verdwijnen wanneer Safari-websitegegevens worden gewist of privé-navigatie wordt gebruikt. Maak af en toe een back-up.</p><div class="export-actions"><button class="btn soft sm" data-action="export">⬇️ Download back-up</button><button class="btn soft sm" data-action="import">⬆️ Back-up terugzetten</button><button class="btn danger sm" data-action="reset">Wis resultaten</button></div></div>`;
+      ${section('🔐 Privacy & back-up','Back-up en gegevensbeheer')}
+      <div class="panel"><p class="muted">Wanneer je met je ouderaccount bent ingelogd, wordt je voortgang ook online opgeslagen. Je kunt daarnaast zelf een back-up downloaden. Bewaar die op een veilige plek.</p><div class="export-actions"><button class="btn soft sm" data-action="export">⬇️ Download back-up</button><button class="btn soft sm" data-action="import">⬆️ Back-up terugzetten</button><button class="btn danger sm" data-action="reset">Wis resultaten</button></div></div>`;
   }
   function render(){
     header();
@@ -283,7 +380,7 @@
       case 'answer':answerQuestion(Number(btn.dataset.index));break;
       case 'next':nextQuestion();break;
       case 'quit':if(window.confirm('Wil je stoppen? De antwoorden van deze les worden dan nog niet opgeslagen.')){session=null;navTo('path');}break;
-      case 'read':{const l=byId(session?.lessonId),q=l?.questions[session.index];if(q)speak(`${q.passage||''} ${q.question}. ${q.options.join(', ')}`);break;}
+      case 'read':readCurrentQuestion();break;
       case 'audio':state.audio=!state.audio;if(!state.audio&&window.speechSynthesis)window.speechSynthesis.cancel();save();header();toast(state.audio?'Voorlezen aan':'Voorlezen uit');break;
       case 'profiles':profileModal();break;
       case 'new-profile':profileModal('new');break;
@@ -305,6 +402,7 @@
   $('restoreFile').addEventListener('change',e=>restoreData(e.target.files?.[0]));
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal)closeModal();});
   render();
+  window.STERRENSTAP_CLOUD?.connect({read:()=>structuredClone(state),apply:remote=>{if(!Array.isArray(remote.children)||!remote.children.length)return;state=remote;localStorage.setItem(KEY,JSON.stringify(state));session=null;view='home';render();}});
   if('serviceWorker' in navigator&&location.protocol==='https:'){
     window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
   }
