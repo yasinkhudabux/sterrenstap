@@ -143,9 +143,33 @@
   Object.assign(toddlerIcons,{'Een hond':'🐶','Een kip':'🐔','Een vis':'🐟','Een kat':'🐱','Een muis':'🐭','Een koe':'🐮','Een eend':'🦆','Een slang':'🐍','Een paard':'🐴','Een poes':'🐱','Een vlinder':'🦋','Een varken':'🐷','Een haan':'🐓','Een kikker':'🐸','Een ezel':'🫏','Muis':'🐭','Olifant':'🐘','Kat':'🐱','Konijn':'🐰','Een huis':'🏠','Een schoen':'👟','Een appel':'🍎','Een beker':'🥤','Bus':'🚌','Fiets':'🚲','Mier':'🐜','Boom':'🌳','Potlood':'✏️','Trein':'🚆','Lepel':'🥄','Sleutel':'🔑','Veertje':'🪶','Ballon':'🎈','Auto':'🚗','Blaadje':'🍃'});
   Object.assign(toddlerIcons,{'Boom':'🌳','Kat':'🐱','Roos':'🌹','Maan':'🌙','Appel':'🍎','Vis':'🐟','Hond':'🐶','Schaap':'🐑','Zon':'☀️','Vlinder':'🦋','Slak':'🐌','Regenjas':'🧥','Zonnebril':'🕶️','Zwembroek':'🩳','Sandalen':'🩴','Lente':'🌷','Zomer':'☀️','Herfst':'🍂','Winter':'❄️','Peer':'🍐','Beer':'🐻','Huis':'🏠','Mat':'🟫','Bal':'⚽','Kip':'🐔'});
   const toddlerColors={'Geel':'#ffd737','Blauw':'#3578ed','Paars':'#9655db','Roze':'#fa82b6','Rood':'#f05252','Groen':'#3aaf73','Zwart':'#252535','Wit':'#ffffff','Bruin':'#99603c','Oranje':'#ff982f'};
+  function illustratedEmoji(emoji){
+    const code=[...emoji].filter(c=>c.codePointAt(0)!==0xfe0f).map(c=>c.codePointAt(0).toString(16)).join('-');
+    const url='https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/'+code+'.svg';
+    return `<span class="picture-frame"><span class="picture-fallback" aria-hidden="true">${emoji}</span><img class="picture-art" src="${url}" alt="" loading="lazy" decoding="async"></span>`;
+  }
+  function playRewardSound(success){
+    if(!state.audio)return;
+    try{
+      const AudioContext=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContext)return;
+      const ctx=new AudioContext();
+      const notes=success?[523.25,659.25,783.99]:[392,440];
+      notes.forEach((frequency,index)=>{
+        const oscillator=ctx.createOscillator(),gain=ctx.createGain(),time=ctx.currentTime+index*0.11;
+        oscillator.type='sine';oscillator.frequency.value=frequency;
+        gain.gain.setValueAtTime(0.0001,time);
+        gain.gain.exponentialRampToValueAtTime(0.085,time+0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001,time+0.18);
+        oscillator.connect(gain);gain.connect(ctx.destination);
+        oscillator.start(time);oscillator.stop(time+0.2);
+      });
+      setTimeout(()=>ctx.close().catch(()=>{}),750);
+    }catch(e){/* Optional audio. */}
+  }
   function toddlerAnswer(o){
     if(Object.hasOwn(toddlerColors,o))return `<span class="toddler-color" style="background:${toddlerColors[o]}" aria-hidden="true"></span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
-    if(Object.hasOwn(toddlerIcons,o))return `<span class="toddler-icon" aria-hidden="true">${toddlerIcons[o]}</span><span class="toddler-answer-label">${escapeHtml(o)}</span>`;
+    if(Object.hasOwn(toddlerIcons,o))return `${illustratedEmoji(toddlerIcons[o])}<span class="toddler-answer-label">${escapeHtml(o)}</span>`;
     if(/^[0-9]+$/.test(o)||/^[⭐🔴🔺🟦]$/.test(o))return `<span class="toddler-icon" aria-hidden="true">${escapeHtml(o)}</span>`;
     return `<span class="toddler-answer-label">${escapeHtml(o)}</span>`;
   }
@@ -159,7 +183,7 @@
       <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${l.questions.length}" aria-valuenow="${num-1}"><span style="width:${Math.round((num-1)*100/l.questions.length)}%"></span></div>
       <article class="quiz-card"><div class="quiz-center"><span class="eyebrow">${escapeHtml(l.subject)} · Vraag ${num}</span>${q.passage?`<div class="passage">${escapeHtml(q.passage)}</div>`:''}<div class="quiz-visual" aria-hidden="true">${escapeHtml(q.visual||l.icon)}</div><h1>${escapeHtml(q.question)}</h1><div class="quiz-tools"><button class="btn soft sm" data-action="read">🔊 Lees voor</button></div></div>
       <div class="answers" role="group" aria-label="Kies het goede antwoord">${q.options.map((o,i)=>`<button class="answer ${chosen!==null?(o===q.answer?'correct':o===chosen?'wrong':''):''}" data-action="answer" data-index="${i}" ${chosen!==null?'disabled':''}>${isToddler?toddlerAnswer(o):escapeHtml(o)}</button>`).join('')}</div>
-      ${chosen!==null?`<div id="answerFeedback" class="feedback ${chosen===q.answer?'good':'bad'}" role="status"><strong>${message}</strong>${escapeHtml(q.explain)}</div>
+      ${chosen!==null?`<div id="answerFeedback" class="feedback ${chosen===q.answer?'good reward-pop':'bad'}" role="status"><strong>${chosen===q.answer?'✨ ⭐ ✨ ':''}${message}</strong>${escapeHtml(q.explain)}</div>
       <div class="quiz-continue"><button class="btn primary" data-action="next">${num===l.questions.length?'Bekijk mijn sterren ⭐':'Volgende vraag →'}</button></div>`:''}
       </article><p class="quiz-hint">Je mag het zo vaak proberen als je wilt. Fouten maken hoort bij leren!</p>
     </section>`;
@@ -173,6 +197,7 @@
     if(good)session.score++;
     session.history.push({question:session.index,answer:session.selected,correct:good});
     render();
+    playRewardSound(good);
     if(good)speak('Heel goed! '+q.explain);else speak('Goed geprobeerd. '+q.explain);
     const feedback=$('answerFeedback');
     if(feedback){feedback.scrollIntoView({block:'nearest',behavior:'smooth'});}
