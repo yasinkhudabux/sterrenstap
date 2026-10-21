@@ -117,3 +117,29 @@ button:disabled{opacity:1}
 
 /* Counting game: number plus a matching quantity of dots. */
 .count-number{font-size:clamp(32px,5vw,50px);font-weight:900;line-height:1}.count-dots{display:block;font-size:16px;letter-spacing:3px;color:#8161d5;line-height:1.4;max-width:140px;overflow-wrap:anywhere}
+
+/* iPad landscape: keep the full shape game visible without vertical scrolling. */
+@media (orientation:landscape) and (min-width:800px) and (max-width:1400px) and (max-height:900px){
+ .quiz-wrap:has(.shape-dropzone){max-width:100%;padding-bottom:0}
+ .quiz-wrap:has(.shape-dropzone) .quiz-top{margin-bottom:5px}
+ .quiz-wrap:has(.shape-dropzone) .quiz-progress{margin-bottom:9px}
+ .quiz-wrap:has(.shape-dropzone) .quiz-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);column-gap:18px;row-gap:8px;align-items:center;padding:12px 18px;border-radius:20px}
+ .quiz-wrap:has(.shape-dropzone) .quiz-center{grid-column:1;grid-row:1}
+ .quiz-wrap:has(.shape-dropzone) .quiz-center .eyebrow{font-size:10px}
+ .quiz-wrap:has(.shape-dropzone) .quiz-visual{font-size:34px;margin:0;line-height:1.1}
+ .quiz-wrap:has(.shape-dropzone) .quiz-card h1{font-size:clamp(20px,2.3vw,27px);margin:3px 0}
+ .quiz-wrap:has(.shape-dropzone) .quiz-tools{margin:5px 0}
+ .quiz-wrap:has(.shape-dropzone) .quiz-tools .btn{min-height:34px;padding:5px 11px}
+ .quiz-wrap:has(.shape-dropzone) .shape-dropzone{grid-column:1;grid-row:2;min-height:86px;margin:0;padding:7px}
+ .quiz-wrap:has(.shape-dropzone) .shape-dropzone>span{font-size:23px;line-height:1}
+ .quiz-wrap:has(.shape-dropzone) .shape-dropzone strong{font-size:15px}
+ .quiz-wrap:has(.shape-dropzone) .shape-dropzone small{font-size:11px}
+ .quiz-wrap:has(.shape-dropzone) .shape-options{grid-column:2;grid-row:1 / span 2;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .quiz-wrap:has(.shape-dropzone) .shape-options .answer{min-height:91px;padding:5px;gap:3px}
+ .quiz-wrap:has(.shape-dropzone) .shape-options .picture-frame{width:64px;height:53px;border-radius:13px}
+ .quiz-wrap:has(.shape-dropzone) .shape-options .picture-fallback{font-size:36px}
+ .quiz-wrap:has(.shape-dropzone) .shape-options .toddler-answer-label{font-size:12px}
+ .quiz-wrap:has(.shape-dropzone) .feedback{grid-column:1 / -1;margin:0;padding:8px}
+ .quiz-wrap:has(.shape-dropzone) .quiz-continue{grid-column:1 / -1;justify-self:center;margin:0}
+ .quiz-wrap:has(.shape-dropzone) .quiz-hint{display:none}
+}
