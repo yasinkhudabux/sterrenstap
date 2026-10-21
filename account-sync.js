@@ -35,8 +35,8 @@ async function accessToken(){
  return session?.access_token;
 }
 async function signIn(email,password,register=false){
- const path=register?'/auth/v1/signup':'/auth/v1/token?grant_type=password';
- const payload=register?{email,password,options:{email_redirect_to:location.origin+location.pathname}}:{email,password};
+ const path=register?'/auth/v1/signup?redirect_to='+encodeURIComponent(location.origin+location.pathname):'/auth/v1/token?grant_type=password';
+ const payload={email,password};
  const s=await request(path,'POST',payload);
  if(!s.access_token){status('Bevestig je e-mailadres en log daarna in.');return;}
  setSession(s);await load();status('☁️ Je bent ingelogd');
