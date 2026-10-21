@@ -39,6 +39,18 @@
     q('Zoek het vierkant!',['Ster','Vierkant','Cirkel','Driehoek'],'Vierkant','Een vierkant heeft vier hoeken.','🟦'),
     q('Zoek de ster!',['Driehoek','Cirkel','Ster','Vierkant'],'Ster','Dat is een mooie ster!','⭐'),
     q('Zoek de cirkel nog een keer!',['Ster','Driehoek','Vierkant','Cirkel'],'Cirkel','Een cirkel is helemaal rond.','🔴')]);
+  L('p-plaatjes','p','Plaatjes koppelen','🐾','Dieren','Luister goed en kies het juiste dier.',[
+    q('Welk dier zegt miauw?',['Een hond','Een kat','Een koe','Een eend'],'Een kat','De kat zegt miauw.','🐱'),
+    q('Welk dier zegt woef?',['Een koe','Een eend','Een hond','Een kip'],'Een hond','De hond zegt woef.','🐶'),
+    q('Welk dier zegt boe?',['Een kat','Een koe','Een kip','Een vis'],'Een koe','De koe zegt boe.','🐮'),
+    q('Welk dier zegt kwaak?',['Een eend','Een paard','Een muis','Een kat'],'Een eend','De eend zegt kwaak.','🦆'),
+    q('Welk dier zegt tok tok?',['Een vis','Een kip','Een hond','Een koe'],'Een kip','De kip zegt tok tok.','🐔')]);
+  L('p-telspel','p','Tel de sterren','🌟','Rekenen','Tel de sterren en kies het juiste aantal.',[
+    q('Hoeveel sterren zie je? ⭐',['1','2','3','4'],'1','Je ziet één ster.','⭐'),
+    q('Hoeveel sterren zie je? ⭐ ⭐',['1','2','3','4'],'2','Je ziet twee sterren.','⭐⭐'),
+    q('Hoeveel sterren zie je? ⭐ ⭐ ⭐',['2','3','4','5'],'3','Je ziet drie sterren.','⭐⭐⭐'),
+    q('Hoeveel sterren zie je? ⭐ ⭐ ⭐ ⭐',['2','3','4','5'],'4','Je ziet vier sterren.','⭐⭐⭐⭐'),
+    q('Hoeveel sterren zie je? ⭐ ⭐ ⭐ ⭐ ⭐',['3','4','5','6'],'5','Je ziet vijf sterren.','⭐⭐⭐⭐⭐')]);
   L('g1-beginklank','g1','Letterpret','🔤','Taal','Hoor met welke klank een woord begint.',[
     q('Met welke letter begint maan?',['M','S','P','K'],'M','Maan begint met de klank m.','🌙'),
     q('Met welke letter begint vis?',['V','B','T','L'],'V','Vis begint met een v.','🐟'),
