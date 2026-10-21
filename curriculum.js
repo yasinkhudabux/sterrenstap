@@ -33,6 +33,12 @@
     q('Welke vorm heeft vier even lange zijden?',['Cirkel','Vierkant','Driehoek','Ovaal'],'Vierkant','Een vierkant heeft vier even lange zijden.','🟦'),
     q('Welke vorm lijkt op een bal?',['Driehoek','Cirkel','Vierkant','Ster'],'Cirkel','Een bal is rond, net als een cirkel.','⚽'),
     q('Wat heeft de vorm van een ster?',['⭐','🔴','🔺','🟦'],'⭐','De ster heeft punten.','🌟')]);
+  L('p-sleepvormen','p','Sleep de vormen','🧩','Vormen','Sleep of tik de juiste vorm naar de speelplek.',[
+    q('Zoek de cirkel!',['Vierkant','Cirkel','Driehoek','Ster'],'Cirkel','Goed zo, dat is de cirkel!','🔴'),
+    q('Zoek de driehoek!',['Cirkel','Ster','Driehoek','Vierkant'],'Driehoek','Een driehoek heeft drie punten.','🔺'),
+    q('Zoek het vierkant!',['Ster','Vierkant','Cirkel','Driehoek'],'Vierkant','Een vierkant heeft vier hoeken.','🟦'),
+    q('Zoek de ster!',['Driehoek','Cirkel','Ster','Vierkant'],'Ster','Dat is een mooie ster!','⭐'),
+    q('Zoek de cirkel nog een keer!',['Ster','Driehoek','Vierkant','Cirkel'],'Cirkel','Een cirkel is helemaal rond.','🔴')]);
   L('g1-beginklank','g1','Letterpret','🔤','Taal','Hoor met welke klank een woord begint.',[
     q('Met welke letter begint maan?',['M','S','P','K'],'M','Maan begint met de klank m.','🌙'),
     q('Met welke letter begint vis?',['V','B','T','L'],'V','Vis begint met een v.','🐟'),
